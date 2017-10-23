@@ -18,7 +18,6 @@ class MessageLog:
         self.height = height
 
     def add_message(self, message):
-        # TODO: Make it so it accepts multiple differently colored messages
         # Split the message if necessary, among multiple lines
         new_msg_lines = textwrap.wrap(message.text, self.width)
 

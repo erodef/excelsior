@@ -3,39 +3,17 @@ from creature import Creature
 from components.fighter import *
 from components.enemy_ai import *
 from skill import *
-from generators import gen_words
 
 
 class Room:
     """
     Dungeon level class
-    TODO: Should probably have the game_map
     """
     ID = 0
-    def __init__(self, name):
+    def __init__(self, name='Empty Room', weight=0, creature=None):
         Room.ID += 1
         self.id = Room.ID
-        self.name = name
-        self.entities = []
-        self.rooms = []
-
-    def populate(self, min=0, max=10):
-        for room in self.rooms:
-            amount = random.randint(min, max)
-            for number in range(amount):
-                x = random.randint(room.x1 + 1, room.x2 - 1)
-                y = random.randint(room.y1 + 1, room.y2 - 1)
-                if not any([entity for entity in self.entities if entity.px == x and entity.py == y]):
-                    name = gen_words('name')
-                    color = (random.randint(25, 235), random.randint(25, 235), random.randint(25, 235))
-                    hp = random.randint(self.id*100,self.id*300)
-                    sp = random.randint(self.id*50,self.id*100)
-                    ar = random.randint(self.id*10,self.id*15)
-                    df = random.randint(self.id*10,self.id*15)
-                    spd = random.randint(self.id*10,self.id*15)
-                    mskills = [getSkill('punch'), getSkill('kick'), getSkill('scratch')]
-                    fighter_component = fighter(hp=hp, sp=sp, ar=ar, df=df, spd=spd, skills=mskills)
-                    ai_component = Basic()
-                    beast = Creature(x, y, name, fighter=fighter_component, ai=ai_component)
-                    beast.color = color
-                    self.entities.append(beast)
+        self.name = name.capitalize()
+        self.weight = weight
+        self.desc = 'An empty room. Vast, dark and filled with dust.'
+        self.entity = creature

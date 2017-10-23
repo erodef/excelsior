@@ -4,15 +4,6 @@ from game_states import State
 from colors import getColors
 
 colors = getColors()
-def get_entities_at(entities, x, y):
-    for entity in entities:
-        if entity.px == x and entity.py == y:
-            return entity
-
-def get_blocking_entities_at(entities, x, y):
-    for entity in entities:
-        if entity.px == x and entity.py == y and entity.stopper:
-            return entity
 
 def kill_player(player):
     player.tile = '%'

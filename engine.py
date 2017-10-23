@@ -3,7 +3,11 @@ import random
 import json
 from enum import Enum, auto
 from creature import Creature
-from generators import gen_words
+from components.enemy_ai import Basic
+from components.fighter import Fighter
+from skill import *
+from functions import *
+from data_parser import get_monster_data
 from room import Room
 
 
@@ -12,15 +16,15 @@ class Engine():
     Handle game variables and functions.
     """
 
-    title = 'roguevo'
-    font = 'terminal12x12_gs_ro.png'
-    altLayout = False
+    title = 'excelsior'
+    font = 'fonts/terminal10x16_gs_tc.png'
+    altLayout = True
     greyscale = True
     starting = True
 
     mouse_coordinates = (0, 0)
     screen_width = 80
-    screen_height = 60
+    screen_height = 45
     bar_width = 20
     panel_height = 15
     panel_y = screen_height - panel_height
@@ -29,34 +33,31 @@ class Engine():
     message_height = panel_height - 1
     max_rooms = 30
 
-    fov_algorithm = 'BASIC'
-    fov_light_walls = True
-    fov_radius = 15
-
     first_time = False
     done = False
     dungeon = []
-    current_level = 0
+    current_level = Room()
+
+    creature_database = creature_database = get_monster_data(
+        'data/monsters.json')
 
     def gen_dungeon(self, levels):
         for amount in range(levels):
-            name = gen_words('world')
-            self.dungeon.append(Room(name))
+            level = Room(weight=amount)
+            candidates = []
+            for creature in self.creature_database:
+                if creature.weight == level.weight:
+                    candidates.append(creature)
+            if candidates:
+                level.entity = random.choice(candidates)
+            self.dungeon.append(level)
             if amount == 0:
-                current_level = self.dungeon[0]
-
-    def move_to(self, t):
-        for level in self.dungeon:
-            if level.active:
-                level.active = False
-        t.active = True
-        t.populate(12)
+                self.current_level = self.dungeon[0]
 
     def advance(self):
         c = 0
         for level in self.dungeon:
-            if level.active:
-                level.active = False
-                self.dungeon[c + 1].active = True
+            if self.current_level == level:
+                self.current_level = self.dungeon[c+1]
                 break
             c += 1

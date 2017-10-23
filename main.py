@@ -18,9 +18,9 @@ from input_handlers import *
 from rendering import *
 from functions import *
 from logbox import *
-from soul import *
 from pc import *
 from skill import *
+from data_parser import *
 from colors import getColors
 
 
@@ -44,34 +44,54 @@ def main():
     # Upgrade Screen
     upgd = tdl.Console(Game.screen_width, Game.panel_height)
 
-    # TODO: Change later. GameMap object and Engine Object
-
     Game.gen_dungeon(5)
-    entities = []
 
     # Player init
     pskills = [getSkill('punch'), getSkill('kick'), getSkill('scratch')]
-    pc_fighter = Fighter(hp=500, sp=100, ar=15, df=10, spd=15, skills=pskills)
+    pc_fighter = Fighter(hp=500, sp=100, atk=15, df=10, spd=15, skills=pskills)
     pc = PC('Player', fighter=pc_fighter)
 
-    entities.append(pc)
-
-    state = State.PLAYER_TURN
+    state = State.ROOM_PHASE
 
     message_log = MessageLog(Game.message_x, Game.message_width, Game.message_height)
+
     if Game.starting:
         message_log.add_message(Message('Welcome to Hell'))
         Game.starting = False
 
-    # TODO: Change later. Easy access for entity list
-    for entity in Game.dungeon[0].entities:
-        entities.append(entity)
-        print(entity.tile, entity.name, entity.px, entity.py)
-
     # Draw
     while not tdl.event.is_window_closed():
+        con.clear()
+
+        con.draw_str(2, 2, Game.current_level.name)
+        con.draw_str(3, 4, Game.current_level.desc)
+
+        if Game.current_level.entity:
+            con.draw_str(3, 8, 'NAME: '+Game.current_level.entity.name.capitalize())
+            con.draw_str(3, 10, 'HP: ' +
+                         str(Game.current_level.entity.fighter.hp))
+            con.draw_str(3, 11, 'SP: '+str(Game.current_level.entity.fighter.sp))
+
+            con.draw_str(3, 12, 'DESC: ' + Game.current_level.entity.desc)
+
+
+        root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
+
+
         # -------------------------------
 
+        panel_bg = colors.get('lighter_black')
+
+        panel.clear(bg=panel_bg)
+
+        panel.draw_str(2, 2, '[Z] Next Room', bg=panel_bg)
+
+
+
+        root_console.blit(panel, 0, Game.panel_y, Game.screen_width,
+                          Game.panel_height, 0, 0)
+
+        # -------------------------------
 
         if show_upgd_menu:
             upgd.clear(fg=colors.get('white'), bg=colors.get('black'))
@@ -92,11 +112,6 @@ def main():
         # -------------------------------
         tdl.flush()
 
-        # Clear all entities previous locations. Prevents ghost images
-        clear_all(con, entities, pc)
-
-        fov_recompute = False
-
         # Handle events
         for event in tdl.event.get():
             if event.type == 'KEYDOWN':
@@ -116,17 +131,14 @@ def main():
         # Input actions
 
         action = handle_keys(user_input)
-        pmove = action.get('pmove')
         quit = action.get('quit')
         fullscreen = action.get('fullscreen')
         upgd_menu = action.get('upgd_menu')
-
-        # Varible to hold results from player turn
-        player_turn_results = []
+        z_press = action.get('z_press')
 
         # Player movement and controls
-        if pmove and state == State.PLAYER_TURN and not show_upgd_menu:
-            pass
+        if z_press and state == State.ROOM_PHASE and Game.current_level != Game.dungeon[-1]:
+            Game.advance()
 
         if quit:
             return True

@@ -6,19 +6,19 @@ class Fighter:
     """
     fighter module for entities. Allows fighting.
     """
-    def __init__(self, hp, sp, ar, df, spd, skills):
+    def __init__(self, hp, sp, atk, df, spd, skills=None):
         self.max_hp = hp
         self.hp = hp
         self.max_sp = sp
         self.sp = sp
-        self.ar = ar
+        self.atk = atk
         self.df = df
         self.spd = spd
         self.skills = skills
 
     def attack(self, target, skill):
         result = []
-        damage = max(0, skill.dmg + int(self.ar*0.5) * int(self.spd * 0.3) - target.fighter.df)
+        damage = max(0, skill.dmg + int(self.atk*0.5) * int(self.spd * 0.3) - target.fighter.df)
         kwargs = { 'actor': self.owner.name.capitalize(), 'target': target.name, 'amount': str(damage) }
 
         if damage > 0:

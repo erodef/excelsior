@@ -1,0 +1,57 @@
+[
+    {
+        "name": "Giant Rat",
+        "hp": 50,
+        "sp": 5,
+        "atk": 10,
+        "df": 5,
+        "spd": 5,
+        "desc": "Long description testttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt :)",
+        "weight": 0
+    },{
+        "name": "Goblin",
+        "hp": 80,
+        "sp": 15,
+        "atk": 15,
+        "df": 10,
+        "spd": 8,
+        "desc": "Small green demon.",
+        "weight": 1
+    },{
+        "name": "Imp",
+        "hp": 100,
+        "sp": 25,
+        "atk": 25,
+        "df": 12,
+        "spd": 15,
+        "desc": "Small red demon.",
+        "weight": 2
+    },{
+        "name": "Skeleton",
+        "hp": 110,
+        "sp": 60,
+        "atk": 25,
+        "df": 18,
+        "spd": 10,
+        "desc": "Walking Bones. Hyuk hyuk.",
+        "weight": 3
+    },{
+        "name": "Golem",
+        "hp": 200,
+        "sp": 40,
+        "atk": 30,
+        "df": 25,
+        "spd": 8,
+        "desc": "Stone construct.",
+        "weight": 4
+    },{
+        "name": "Lesser Demon",
+        "hp": 170,
+        "sp": 50,
+        "atk": 30,
+        "df": 20,
+        "spd": 20,
+        "desc": "True demon. Violent and powerful.",
+        "weight": 5
+    }
+]

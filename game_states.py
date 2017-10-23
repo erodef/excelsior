@@ -5,7 +5,7 @@ class State(Enum):
     """
     Controls game state
     """
-    PLAYER_TURN = auto()
-    ENEMY_TURN = auto()
-    PLAYER_DEAD = auto()
-    PMENU_OPEN = auto()
+    ROOM_PHASE = auto()
+    BATTLE_PHASE = auto()
+    UPGD_PHASE = auto()
+    ENDING = auto()
