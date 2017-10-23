@@ -66,31 +66,36 @@ def main():
         con.draw_str(2, 2, Game.current_level.name)
         con.draw_str(3, 4, Game.current_level.desc)
 
-        if Game.current_level.entity:
-            con.draw_str(3, 8, 'NAME: '+Game.current_level.entity.name.capitalize())
-            con.draw_str(3, 10, 'HP: ' +
-                         str(Game.current_level.entity.fighter.hp))
-            con.draw_str(3, 11, 'SP: '+str(Game.current_level.entity.fighter.sp))
+        if state == State.ROOM_PHASE:
+            if Game.current_level.entity:
+                con.draw_str(3, 8, "In this room, there is a")
+                con.draw_str(28, 8, Game.current_level.entity.name, colors.get('red'))
 
-            con.draw_str(3, 12, 'DESC: ' + Game.current_level.entity.desc)
+            # Bottom Panel
+            panel_bg = colors.get('lighter_black')
+            panel.clear(bg=panel_bg)
+            panel.draw_str(2, 2, '[Z] Fight', bg=panel_bg, fg=colors.get('green'))
 
+        elif state == State.BATTLE_PHASE:
+            if Game.current_level.entity:
+                con.draw_str(3, 8, 'NAME: '+Game.current_level.entity.name.capitalize())
+                con.draw_str(3, 10, 'HP: ' +
+                            str(Game.current_level.entity.fighter.hp))
+                con.draw_str(3, 11, 'SP: '+str(Game.current_level.entity.fighter.sp))
+
+                con.draw_str(3, 12, 'DESC: ' + Game.current_level.entity.desc)
+
+
+            root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
+
+            # Bottom Panel
+            panel_bg = colors.get('lighter_black')
+            panel.clear(bg=panel_bg)
+            panel.draw_str(2, 2, '[Z] Next Room', bg=panel_bg, fg=colors.get('green'))
 
         root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
-
-
-        # -------------------------------
-
-        panel_bg = colors.get('lighter_black')
-
-        panel.clear(bg=panel_bg)
-
-        panel.draw_str(2, 2, '[Z] Next Room', bg=panel_bg)
-
-
-
         root_console.blit(panel, 0, Game.panel_y, Game.screen_width,
                           Game.panel_height, 0, 0)
-
         # -------------------------------
 
         if show_upgd_menu:
@@ -137,8 +142,12 @@ def main():
         z_press = action.get('z_press')
 
         # Player movement and controls
-        if z_press and state == State.ROOM_PHASE and Game.current_level != Game.dungeon[-1]:
-            Game.advance()
+        if z_press and state == State.ROOM_PHASE:
+            state = State.BATTLE_PHASE
+
+        elif z_press and state == State.BATTLE_PHASE and Game.current_level != Game.dungeon[-1]:
+            Game.next_level()
+            state = State.ROOM_PHASE
 
         if quit:
             return True

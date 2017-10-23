@@ -54,7 +54,11 @@ class Engine():
             if amount == 0:
                 self.current_level = self.dungeon[0]
 
-    def advance(self):
+    def next_stage(self, gamestate):
+        if gamestate == State.ROOM_PHASE:
+            self.next_level()
+
+    def next_level(self):
         c = 0
         for level in self.dungeon:
             if self.current_level == level:
