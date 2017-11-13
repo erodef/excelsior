@@ -18,6 +18,7 @@ colors = {
     'violet': (127, 0, 255),
     'yellow': (255, 255, 0),
     'blue': (0, 0, 255),
+    'dark_blue': (0, 0, 127),
     'green': (0, 255, 0),
     'light_cyan': (114, 255, 255),
     'light_pink': (255, 114, 184)

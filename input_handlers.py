@@ -11,8 +11,5 @@ def handle_keys(user_input):
     elif user_input.key == 'ESCAPE':
         return {'quit': True}
 
-    elif user_input.keychar == 'x':
-        return {'upgd_menu': True}
-
     # If nothing pressed, return nothing
     return {}

@@ -24,13 +24,13 @@ class Engine():
 
     mouse_coordinates = (0, 0)
     screen_width = 80
-    screen_height = 45
+    screen_height = 40
     bar_width = 20
     panel_height = 15
     panel_y = screen_height - panel_height
-    message_x = bar_width + 2
+    message_x = 4
     message_width = screen_width - bar_width - 2
-    message_height = panel_height - 1
+    message_height = 10
     max_rooms = 30
 
     first_time = False

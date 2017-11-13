@@ -26,16 +26,6 @@ class Fighter:
                 'message': Message(skill.message.format(**kwargs))
                 })
 
-            if random.randint(0,10) <= 2:
-                mx, my = self.owner.px, self.owner.py
-                tmx, tmy = target.px, target.py
-                fx, fy = 2, 2
-                if mx > tmx:
-                    fx = -fx
-                if my > tmy:
-                    fy = -fy
-                target.move(fx, fy)
-
             result.extend(target.fighter.take_hit(damage))
         else:
             result.append({'message': Message('{0} tries to attack {1} but the damage is mitigated'.format(self.owner.name.capitalize(), target.name))})
