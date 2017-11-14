@@ -35,6 +35,7 @@ def main():
     # TDL init
     tdl.set_font(Game.font, greyscale=Game.greyscale, altLayout=Game.altLayout)
     root_console = tdl.init(Game.screen_width, Game.screen_height, title=Game.title)
+    tdl.set_fps(30)
 
     # Gameplay screen
     con = tdl.Console(Game.screen_width, Game.screen_height)
@@ -85,21 +86,22 @@ def main():
             render_bar(con, Game.en_hud_x, Game.en_hud_y+2, Game.bar_width, 'HP', Game.current_level.entity.fighter.hp, Game.current_level.entity.fighter.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
             render_bar(con, Game.en_hud_x, Game.en_hud_y+3, Game.bar_width, 'SP', Game.current_level.entity.fighter.sp, Game.current_level.entity.fighter.max_sp, colors.get('blue'), colors.get('dark_blue'), colors.get('white'))
 
+            # Log
             y = message_log.height
             for message in message_log.messages:
                 con.draw_str(message_log.x, y, message.text, fg=message.color)
                 y += 1
 
+            # Skills
             con.draw_str(40, Game.screen_height-3, '[1]')
-            con.draw_str(44, Game.screen_height-3, pc.fighter.skills[0].name)
-            con.draw_str(50, Game.screen_height-3, str(pc.fighter.skills[0].timeout)+'/'+str(pc.fighter.skills[0].max_timeout))
+            render_bar(con, 44, Game.screen_height-3, 20, pc.fighter.skills[0].name, pc.fighter.skills[0].timeout, pc.fighter.skills[0].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
 
             con.draw_str(40, Game.screen_height-2, '[2]')
-            con.draw_str(44, Game.screen_height-2, pc.fighter.skills[1].name)
+            render_bar(con, 44, Game.screen_height-2, 20, pc.fighter.skills[1].name, pc.fighter.skills[1].timeout, pc.fighter.skills[1].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
 
 
             con.draw_str(40, Game.screen_height-1, '[3]')
-            con.draw_str(44, Game.screen_height-1, pc.fighter.skills[2].name)
+            render_bar(con, 44, Game.screen_height-1, 20, pc.fighter.skills[2].name, pc.fighter.skills[2].timeout, pc.fighter.skills[2].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
 
 
             root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
@@ -141,17 +143,12 @@ def main():
         else:
             user_input = None
 
-        # If there is no input, continue checking. This means
-        # the game only continues if there's user input (Keypress).
-        if not user_input:
-            continue
-
         # Input actions
 
-        action = handle_keys(user_input)
+        """action = handle_keys(user_input)
         quit = action.get('quit')
         fullscreen = action.get('fullscreen')
-        z_press = action.get('z_press')
+        z_press = action.get('z_press')"""
 
         # Combat
         if gamestate == State.BATTLE_PHASE:
@@ -162,7 +159,7 @@ def main():
                     if skill.timeout < skill.max_timeout:
                         skill.timeout += 1
 
-                if user_input.keychar == '1':
+                if user_input and user_input.keychar == '1':
                     if pc.fighter.skills[0].timeout == pc.fighter.skills[0].max_timeout:
                         results = pc.fighter.attack(enemy, pc.fighter.skills[0])
 
@@ -182,26 +179,26 @@ def main():
                         combat_locked = False
 
             if not combat_locked:
-                if user_input.keychar == 'z':
+                if user_input and user_input.keychar == 'z':
                     message_log.messages = []
                     gamestate = State.UPGD_PHASE
 
         # Controls
-        if z_press and gamestate == State.ROOM_PHASE:
+        if user_input and user_input.keychar == 'z' and gamestate == State.ROOM_PHASE:
             if Game.current_level.entity:
                 gamestate = State.BATTLE_PHASE
                 combat_locked = True
             else:
                 Game.next_level()
 
-        elif z_press and gamestate == State.UPGD_PHASE:
+        elif user_input and user_input.keychar == 'z' and gamestate == State.UPGD_PHASE:
             Game.next_level()
             gamestate = State.ROOM_PHASE
 
-        if quit:
+        if user_input and user_input.key == 'ESCAPE' :
             return True
 
-        if fullscreen:
+        if user_input and user_input.key == 'ENTER' and user_input.alt :
             tdl.set_fullscreen(not tdl.get_fullscreen())
 
 if __name__ == '__main__':

@@ -34,7 +34,7 @@ class Engine():
     pc_hud_x = 4
     pc_hud_y = 30
 
-    en_hud_x = 56
+    en_hud_x = 46
     en_hud_y = 5
 
     first_time = False

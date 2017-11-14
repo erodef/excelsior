@@ -19,9 +19,9 @@ class Skill():
         self.requires = []
 
 skilltree = {
-    'punch': Skill('Punch', dmg=10, blowf=1, stun=1, to_hit=70, cost=0, timeout=10, message='{actor} punches {target} dealing {amount} damage!'),
-    'kick': Skill('Kick', dmg=16, blowf=3, stun=3, to_hit=50, cost=5, timeout=10, message='{actor} kicks {target} dealing {amount} damage!'),
-    'scratch': Skill('Scratch', dmg=12, blowf=1, stun=1, to_hit=65, timeout=10, cost=1, message='{actor} claws {target} dealing {amount} damage!'),
+    'punch': Skill('Punch', dmg=10, blowf=1, stun=1, to_hit=70, cost=0, timeout=100, message='{actor} punches {target} dealing {amount} damage!'),
+    'kick': Skill('Kick', dmg=16, blowf=3, stun=3, to_hit=50, cost=5, timeout=100, message='{actor} kicks {target} dealing {amount} damage!'),
+    'scratch': Skill('Scratch', dmg=12, blowf=1, stun=1, to_hit=65, timeout=100, cost=1, message='{actor} claws {target} dealing {amount} damage!'),
 }
 
 def getSkill(key):
