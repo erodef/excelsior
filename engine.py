@@ -1,6 +1,7 @@
 # Engine class
 import random
 import json
+import copy
 from enum import Enum, auto
 from creature import Creature
 from components.enemy_ai import Basic
@@ -50,7 +51,7 @@ class Engine():
             level = Room(weight=amount)
             candidates = []
             for creature in self.creature_database:
-                pskills = [getSkill('punch'), getSkill('kick'), getSkill('scratch')]
+                pskills = copy.deepcopy(skilltree)
                 creature.fighter.skills = pskills
                 if creature.weight == level.weight:
                     candidates.append(creature)

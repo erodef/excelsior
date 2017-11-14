@@ -10,6 +10,7 @@ import json
 import random
 import tdl
 import sys
+import copy
 from components.fighter import *
 from components.enemy_ai import *
 from game_states import *
@@ -30,7 +31,7 @@ def main():
     colors = getColors()
 
     combat_locked = False
-    turn = 0
+    mact_counter = 0
 
     # TDL init
     tdl.set_font(Game.font, greyscale=Game.greyscale, altLayout=Game.altLayout)
@@ -46,7 +47,7 @@ def main():
     Game.gen_dungeon(5)
 
     # Player init
-    pskills = [getSkill('punch'), getSkill('kick'), getSkill('scratch')]
+    pskills = copy.deepcopy(skilltree)
     pc_fighter = Fighter(hp=50, sp=10, atk=15, df=10, spd=15, skills=pskills)
     pc = PC('Player', fighter=pc_fighter)
 
@@ -75,6 +76,7 @@ def main():
 
         if gamestate == State.BATTLE_PHASE:
             con.clear()
+            enemy = Game.current_level.entity
 
             # Player
             con.draw_str(Game.pc_hud_x, Game.pc_hud_y, pc.name)
@@ -82,9 +84,9 @@ def main():
             render_bar(con, Game.pc_hud_x, Game.pc_hud_y+3, Game.bar_width, 'SP', pc.fighter.sp, pc.fighter.max_sp, colors.get('blue'), colors.get('dark_blue'), colors.get('white'))
 
             # Enemy
-            con.draw_str(Game.en_hud_x, Game.en_hud_y, Game.current_level.entity.name)
-            render_bar(con, Game.en_hud_x, Game.en_hud_y+2, Game.bar_width, 'HP', Game.current_level.entity.fighter.hp, Game.current_level.entity.fighter.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
-            render_bar(con, Game.en_hud_x, Game.en_hud_y+3, Game.bar_width, 'SP', Game.current_level.entity.fighter.sp, Game.current_level.entity.fighter.max_sp, colors.get('blue'), colors.get('dark_blue'), colors.get('white'))
+            con.draw_str(Game.en_hud_x, Game.en_hud_y, enemy.name)
+            render_bar(con, Game.en_hud_x, Game.en_hud_y+2, Game.bar_width, 'HP', enemy.fighter.hp, enemy.fighter.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
+            render_bar(con, Game.en_hud_x, Game.en_hud_y+3, Game.bar_width, 'SP', enemy.fighter.sp, enemy.fighter.max_sp, colors.get('blue'), colors.get('dark_blue'), colors.get('white'))
 
             # Log
             y = message_log.height
@@ -102,6 +104,17 @@ def main():
 
             con.draw_str(40, Game.screen_height-1, '[3]')
             render_bar(con, 44, Game.screen_height-1, 20, pc.fighter.skills[2].name, pc.fighter.skills[2].timeout, pc.fighter.skills[2].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
+
+
+            con.draw_str(4, 1, '[1]')
+            render_bar(con, 6, 1, 20, enemy.fighter.skills[0].name, enemy.fighter.skills[0].timeout, enemy.fighter.skills[0].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
+
+            con.draw_str(4, 2, '[2]')
+            render_bar(con, 6, 2, 20, enemy.fighter.skills[1].name, enemy.fighter.skills[1].timeout, enemy.fighter.skills[1].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
+
+
+            con.draw_str(4, 3, '[3]')
+            render_bar(con, 6, 3, 20, enemy.fighter.skills[2].name, enemy.fighter.skills[2].timeout, enemy.fighter.skills[2].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
 
 
             root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
@@ -145,27 +158,34 @@ def main():
 
         # Input actions
 
-        """action = handle_keys(user_input)
-        quit = action.get('quit')
-        fullscreen = action.get('fullscreen')
-        z_press = action.get('z_press')"""
-
         # Combat
         if gamestate == State.BATTLE_PHASE:
             enemy = Game.current_level.entity
             results = []
             if combat_locked:
+                # Player
                 for skill in pc.fighter.skills:
                     if skill.timeout < skill.max_timeout:
                         skill.timeout += 1
 
-                if user_input and user_input.keychar == '1':
-                    if pc.fighter.skills[0].timeout == pc.fighter.skills[0].max_timeout:
-                        results = pc.fighter.attack(enemy, pc.fighter.skills[0])
+                if user_input:
+                    if user_input.keychar == '1' or user_input.keychar == '2' or user_input.keychar == '3':
+                        n = int(user_input.keychar)-1
+                        if pc.fighter.skills[n].timeout == pc.fighter.skills[n].max_timeout:
+                            results = pc.fighter.attack(enemy, pc.fighter.skills[n])
 
-                """
-                results = enemy.fighter.attack(pc, random.choice(enemy.fighter.skills))
-                """
+                # Enemy
+                for skill in enemy.fighter.skills:
+                    if skill.timeout < skill.max_timeout:
+                        skill.timeout += 1
+
+                if mact_counter < 50:
+                    mact_counter += 1
+                else:
+                    skill = random.choice(enemy.fighter.skills)
+                    if skill.timeout >= skill.max_timeout:
+                        results = enemy.fighter.attack(pc, skill)
+                    mact_counter = 0
 
                 for result in results:
                     message = result.get('message')
@@ -180,11 +200,13 @@ def main():
 
             if not combat_locked:
                 if user_input and user_input.keychar == 'z':
+                    for skill in pc.fighter.skills:
+                        skill.timeout = skill.max_timeout
                     message_log.messages = []
                     gamestate = State.UPGD_PHASE
 
         # Controls
-        if user_input and user_input.keychar == 'z' and gamestate == State.ROOM_PHASE:
+        elif user_input and user_input.keychar == 'z' and gamestate == State.ROOM_PHASE:
             if Game.current_level.entity:
                 gamestate = State.BATTLE_PHASE
                 combat_locked = True
