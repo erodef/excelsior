@@ -11,6 +11,7 @@ class Skill():
         self.dmg = dmg
         self.cost = cost
         self.timeout = timeout
+        self.max_timeout = self.timeout
         self.blowf = blowf
         self.stun = stun
         self.to_hit = to_hit

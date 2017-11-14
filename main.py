@@ -90,9 +90,17 @@ def main():
                 con.draw_str(message_log.x, y, message.text, fg=message.color)
                 y += 1
 
-            con.draw_str(2, Game.screen_height-3, '[1] Attack')
-            con.draw_str(2, Game.screen_height-2, '[2] Guard')
-            con.draw_str(2, Game.screen_height-1, '[3] Evade')
+            con.draw_str(40, Game.screen_height-3, '[1]')
+            con.draw_str(44, Game.screen_height-3, pc.fighter.skills[0].name)
+            con.draw_str(50, Game.screen_height-3, str(pc.fighter.skills[0].timeout)+'/'+str(pc.fighter.skills[0].max_timeout))
+
+            con.draw_str(40, Game.screen_height-2, '[2]')
+            con.draw_str(44, Game.screen_height-2, pc.fighter.skills[1].name)
+
+
+            con.draw_str(40, Game.screen_height-1, '[3]')
+            con.draw_str(44, Game.screen_height-1, pc.fighter.skills[2].name)
+
 
             root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
 
@@ -150,12 +158,17 @@ def main():
             enemy = Game.current_level.entity
             results = []
             if combat_locked:
-                if turn == 0 and user_input.keychar == '1':
-                    results = pc.fighter.attack(enemy, pc.fighter.skills[0])
-                    turn = 1
-                elif turn == 1:
-                    results = enemy.fighter.attack(pc, pc.fighter.skills[0])
-                    turn = 0
+                for skill in pc.fighter.skills:
+                    if skill.timeout < skill.max_timeout:
+                        skill.timeout += 1
+
+                if user_input.keychar == '1':
+                    if pc.fighter.skills[0].timeout == pc.fighter.skills[0].max_timeout:
+                        results = pc.fighter.attack(enemy, pc.fighter.skills[0])
+
+                """
+                results = enemy.fighter.attack(pc, random.choice(enemy.fighter.skills))
+                """
 
                 for result in results:
                     message = result.get('message')
@@ -163,14 +176,13 @@ def main():
                     if message:
                         message_log.add_message(message)
 
-                    if dead_entity:
+                    if dead_entity and dead_entity != pc:
                         message_log.add_message(Message(dead_entity.name+ " has died!"))
                         message_log.add_message(Message("Press 'Z' to continue..."))
                         combat_locked = False
 
             if not combat_locked:
                 if user_input.keychar == 'z':
-                    turn = 0
                     message_log.messages = []
                     gamestate = State.UPGD_PHASE
 

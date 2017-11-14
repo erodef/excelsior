@@ -18,7 +18,7 @@ class Fighter:
 
     def attack(self, target, skill):
         result = []
-        damage = max(0, skill.dmg + int(self.atk*0.5) * int(self.spd * 0.3) - target.fighter.df)
+        damage = max(0, skill.dmg + int(self.atk*0.5) * int(self.spd * 0.3) - target.fighter.df + random.randint(-5,+5))
         kwargs = { 'actor': self.owner.name.capitalize(), 'target': target.name, 'amount': str(damage) }
 
         if damage > 0:
@@ -29,6 +29,7 @@ class Fighter:
             result.extend(target.fighter.take_hit(damage))
         else:
             result.append({'message': Message('{0} tries to attack {1} but the damage is mitigated'.format(self.owner.name.capitalize(), target.name))})
+        skill.timeout = 0
         return result
 
     def take_hit(self, value):
