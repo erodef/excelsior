@@ -9,6 +9,7 @@ class Entity:
     def __init__(self, name, fighter=None, ai=None):
         self.name = name
         self.desc = 'Nothing is know about them.'
+        self.battler = "?"
 
         self.fighter = fighter
         self.ai = ai

@@ -76,8 +76,11 @@ def main():
 
         if gamestate == State.BATTLE_PHASE:
             con.clear()
+            con.draw_str(2, 2, Game.current_level.name)
+
             enemy = Game.current_level.entity
 
+            # HUDs
             # Player
             con.draw_str(Game.pc_hud_x, Game.pc_hud_y, pc.name)
             render_bar(con, Game.pc_hud_x, Game.pc_hud_y+2, Game.bar_width, 'HP', pc.fighter.hp, pc.fighter.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
@@ -89,37 +92,48 @@ def main():
             render_bar(con, Game.en_hud_x, Game.en_hud_y+3, Game.bar_width, 'SP', enemy.fighter.sp, enemy.fighter.max_sp, colors.get('blue'), colors.get('dark_blue'), colors.get('white'))
 
             # Log
-            y = message_log.height
+            y = 15
             for message in message_log.messages:
                 con.draw_str(message_log.x, y, message.text, fg=message.color)
                 y += 1
 
             # Skills
-            con.draw_str(40, Game.screen_height-3, '[1]')
-            render_bar(con, 44, Game.screen_height-3, 20, pc.fighter.skills[0].name, pc.fighter.skills[0].timeout, pc.fighter.skills[0].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
+            # Player
+            x = Game.pc_hud_x
+            y = Game.pc_hud_y+5
+            n = 1
+            for skill in pc.fighter.skills:
+                con.draw_str(x, y, "["+str(n)+"]")
+                render_bar(con, x+4, y, 20, skill.name, skill.timeout, skill.max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
+                y += 1
+                n += 1
 
-            con.draw_str(40, Game.screen_height-2, '[2]')
-            render_bar(con, 44, Game.screen_height-2, 20, pc.fighter.skills[1].name, pc.fighter.skills[1].timeout, pc.fighter.skills[1].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
+            # Enemy
+            x = Game.en_hud_x
+            y = Game.en_hud_y+5
+            n = 1
+            for skill in enemy.fighter.skills:
+                con.draw_str(x, y, "["+str(n)+"]")
+                render_bar(con, x+4, y, 20, skill.name, skill.timeout, skill.max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
+                y += 1
+                n += 1
 
+            # Battlers
+            # Player
+            lx = 12
+            ly = 25
+            for bx in range(10):
+                for by in range(10):
+                    con.draw_char(bx+lx, by+ly, '@')
 
-            con.draw_str(40, Game.screen_height-1, '[3]')
-            render_bar(con, 44, Game.screen_height-1, 20, pc.fighter.skills[2].name, pc.fighter.skills[2].timeout, pc.fighter.skills[2].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
-
-
-            con.draw_str(4, 1, '[1]')
-            render_bar(con, 6, 1, 20, enemy.fighter.skills[0].name, enemy.fighter.skills[0].timeout, enemy.fighter.skills[0].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
-
-            con.draw_str(4, 2, '[2]')
-            render_bar(con, 6, 2, 20, enemy.fighter.skills[1].name, enemy.fighter.skills[1].timeout, enemy.fighter.skills[1].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
-
-
-            con.draw_str(4, 3, '[3]')
-            render_bar(con, 6, 3, 20, enemy.fighter.skills[2].name, enemy.fighter.skills[2].timeout, enemy.fighter.skills[2].max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
-
+            # Enemy
+            lx = 56
+            ly = 25
+            for bx in range(10):
+                for by in range(10):
+                    con.draw_char(bx+lx, by+ly, 'Y')
 
             root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
-
-        # -------------------------------
 
         if gamestate == State.UPGD_PHASE:
             con.clear()
@@ -137,8 +151,6 @@ def main():
             con.draw_str(28, 6, str(pc.soulstack))
 
             con.draw_str(2, Game.screen_height-1, '[Z] Next')
-
-        # -------------------------------
 
         root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
 

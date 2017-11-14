@@ -27,13 +27,13 @@ class Engine():
     screen_width = 80
     screen_height = 40
     message_x = 4
-    message_width = screen_width - 10
-    message_height = 10
+    message_width = screen_width - 4
+    message_height = 7
     max_rooms = 30
 
     bar_width = 30
     pc_hud_x = 4
-    pc_hud_y = 30
+    pc_hud_y = 5
 
     en_hud_x = 46
     en_hud_y = 5
