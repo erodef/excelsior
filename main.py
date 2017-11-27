@@ -47,7 +47,7 @@ def main():
     Game.gen_dungeon(5)
 
     # Player init
-    pskills = copy.deepcopy(skilltree)
+    pskills = [copy.deepcopy(skillpunch), copy.deepcopy(skillguard)]
     pc_fighter = Fighter(hp=50, sp=10, atk=15, df=10, spd=15, skills=pskills)
     pc = PC('Player', fighter=pc_fighter)
 
@@ -181,7 +181,7 @@ def main():
                         skill.timeout += 1
 
                 if user_input:
-                    if user_input.keychar == '1' or user_input.keychar == '2' or user_input.keychar == '3':
+                    if user_input.keychar == '1' or user_input.keychar == '2' or user_input.keychar == '3' or user_input.keychar == '4':
                         n = int(user_input.keychar)-1
                         if pc.fighter.skills[n].timeout == pc.fighter.skills[n].max_timeout:
                             results = pc.fighter.attack(enemy, pc.fighter.skills[n])

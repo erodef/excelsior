@@ -51,8 +51,7 @@ class Engine():
             level = Room(weight=amount)
             candidates = []
             for creature in self.creature_database:
-                pskills = copy.deepcopy(skilltree)
-                creature.fighter.skills = pskills
+                creature.fighter.skills = [copy.deepcopy(skillpunch)]
                 if creature.weight == level.weight:
                     candidates.append(creature)
             if candidates:
