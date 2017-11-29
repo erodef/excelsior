@@ -24,18 +24,17 @@ def get_skill_data(path):
         data = json.load(json_data)
         results = []
         for skill in data:
-            name, dmg, to_hit, timeout, message = skill["name"], skill["dmg"], skill["to_hit"], skill["timeout"], skill["message"]
+            name, timeout, desc, rec, actions = skill["name"], skill["timeout"], skill["desc"], skill["req"], skill["actions"]
+            final_actions = []
+            for action in actions:
+                new_action = ''
+                if action["type"] == "direct_damage":
+                    new_action = direct_damage(action["message"], action["dmg"])
 
-            if skill["type"] == 1:
-                entry = SkillStdA(name, dmg, to_hit, timeout, message)
+                if action["type"] == "guard":
+                    new_action = guard(action["message"], action["duration"])
 
-            if skill["type"] == 2:
-                entry = SkillScdnA(name, dmg, to_hit, timeout, message)
-
-            if skill["type"] == 3:
-                entry = SkillGd(name, dmg, to_hit, timeout, message)
-
-            entry.desc = skill["desc"]
-
+                final_actions.append(new_action)
+            entry = Skill(name, timeout, desc, rec, final_actions)
             results.append(entry)
         return results

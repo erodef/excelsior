@@ -203,7 +203,7 @@ def main():
                     if user_input.keychar == '1' or user_input.keychar == '2' or user_input.keychar == '3' or user_input.keychar == '4':
                         skill = pc.skills[int(user_input.keychar)-1]
                         if skill.timeout == skill.max_timeout:
-                            results = skill.attack(pc, enemy)
+                            results = skill.activate(pc, enemy)
 
                 # Enemy
                 for skill in enemy.skills:
@@ -216,14 +216,16 @@ def main():
                     else:
                         del enemy.buffs[enemy.buffs.index(buff)]
 
+                # Making the enemy attack
                 if mact_counter < 50:
                     mact_counter += 1
                 else:
                     skill = random.choice(enemy.skills)
                     if skill.timeout >= skill.max_timeout:
-                        results = skill.attack(enemy, pc)
+                        results = skill.activate(enemy, pc)
                     mact_counter = 0
 
+                # Handling results
                 for result in results:
                     message = result.get('message')
                     dead_entity = result.get('dead')

@@ -1,51 +1,39 @@
 [
   {
-    "type" : 1,
     "name" : "Punch",
+    "timeout" : 100,
     "desc" : "A normal punch.",
-    "dmg" : 10,
-    "to_hit" : 80,
-    "timeout" : 100,
-    "message" : "{actor} punches {target} dealing {amount} damage!"
+    "req" : "",
+    "actions" : [
+      {
+        "type" : "direct_damage",
+        "dmg" : 10,
+        "message" : "{actor} punches {target} dealing {amount} damage!"
+      }
+    ]
   },{
-    "type" : 1,
     "name" : "Kick",
+    "timeout" : 180,
     "desc" : "A normal kick.",
-    "dmg" : 20,
-    "to_hit" : 50,
-    "timeout" : 150,
-    "message" : "{actor} kicks {target} dealing {amount} damage!"
+    "req" : "",
+    "actions" : [
+      {
+        "type" : "direct_damage",
+        "dmg" : 20,
+        "message" : "{actor} kicks {target} dealing {amount} damage!"
+      }
+    ]
   },{
-    "type" : 3,
     "name" : "Parry",
-    "desc" : "Attempt to parry the opponent's strike.",
-    "dmg" : 0,
-    "to_hit" : 100,
     "timeout" : 50,
-    "message" : "{actor} prepares to parry!"
-  },{
-    "type" : 1,
-    "name" : "Punch II",
-    "desc" : "A BETTER normal punch.",
-    "dmg" : 15,
-    "to_hit" : 85,
-    "timeout" : 100,
-    "message" : "{actor} punches {target} dealing {amount} damage!"
-  },{
-    "type" : 1,
-    "name" : "Kick II",
-    "desc" : "A BETTER normal kick.",
-    "dmg" : 30,
-    "to_hit" : 65,
-    "timeout" : 150,
-    "message" : "{actor} kicks {target} dealing {amount} damage!"
-  },{
-    "type" : 1,
-    "name" : "Double Punch",
-    "desc" : "Punches the opponent twice for double damage!",
-    "dmg" : 10,
-    "to_hit" : 80,
-    "timeout" : 100,
-    "message" : "{actor} punches {target} dealing {amount} damage!"
+    "desc" : "Attempt to parry the opponent's strike.",
+    "req" : "",
+    "actions" : [
+      {
+        "type" : "guard",
+        "duration" : 5,
+        "message" : "{actor} prepares to parry!"
+      }
+    ]
   }
 ]
