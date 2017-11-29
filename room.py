@@ -1,7 +1,5 @@
 import random
 from creature import Creature
-from components.fighter import *
-from components.enemy_ai import *
 from skill import *
 
 

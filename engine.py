@@ -4,11 +4,9 @@ import json
 import copy
 from enum import Enum, auto
 from creature import Creature
-from components.enemy_ai import Basic
-from components.fighter import Fighter
+from components.enemy_ai import *
 from skill import *
-from functions import *
-from data_parser import get_monster_data
+from data_parser import get_monster_data, get_skill_data
 from room import Room
 
 
@@ -43,15 +41,15 @@ class Engine():
     dungeon = []
     current_level = Room()
 
-    creature_database = creature_database = get_monster_data(
-        'data/monsters.json')
+    creature_database = get_monster_data('data/monsters.json')
+    skill_database = get_skill_data('data/skills.json')
 
     def gen_dungeon(self, levels):
         for amount in range(levels):
             level = Room(weight=amount)
             candidates = []
             for creature in self.creature_database:
-                creature.fighter.skills = [copy.deepcopy(skillpunch)]
+                creature.skills = [copy.deepcopy(self.skill_database[0])]
                 if creature.weight == level.weight:
                     candidates.append(creature)
             if candidates:

@@ -1,23 +1,23 @@
 # coding=utf-8
 """
-    TODO: Progression system
-    TODO: Multiple dungeon levels
-    TODO: Custom dungeon generation algorithmn
-    TODO: Skill Window
-    TODO: Combat Revamp
+    TODO: Skill upgrade progression system
+    TODO: Introduction
+    TODO: Ending
+
+    TODO: -EXTRA- Choices during dungeon movement
+    TODO: -EXTRA- More monsters, skills
+    TODO: -EXTRA- Music and sfx
+    TODO: -EXTRA- Animations
 """
 import json
 import random
 import tdl
 import sys
 import copy
-from components.fighter import *
 from components.enemy_ai import *
 from game_states import *
 from engine import *
-from input_handlers import *
 from rendering import *
-from functions import *
 from logbox import *
 from pc import *
 from skill import *
@@ -47,8 +47,8 @@ def main():
     Game.gen_dungeon(5)
 
     # Player init
-    pskills = [copy.deepcopy(skillpunch), copy.deepcopy(skillguard)]
-    pc_fighter = Fighter(hp=50, sp=10, atk=15, df=10, spd=15, skills=pskills)
+    pskills = [copy.deepcopy(Game.skill_database[0]), copy.deepcopy(Game.skill_database[1]), copy.deepcopy(Game.skill_database[2])]
+    pc_fighter = {'hp':50, 'atk':15, 'df':10, 'spd':15, 'skills':pskills}
     pc = PC('Player', fighter=pc_fighter)
 
     gamestate = State.ROOM_PHASE
@@ -83,13 +83,11 @@ def main():
             # HUDs
             # Player
             con.draw_str(Game.pc_hud_x, Game.pc_hud_y, pc.name)
-            render_bar(con, Game.pc_hud_x, Game.pc_hud_y+2, Game.bar_width, 'HP', pc.fighter.hp, pc.fighter.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
-            render_bar(con, Game.pc_hud_x, Game.pc_hud_y+3, Game.bar_width, 'SP', pc.fighter.sp, pc.fighter.max_sp, colors.get('blue'), colors.get('dark_blue'), colors.get('white'))
+            render_bar(con, Game.pc_hud_x, Game.pc_hud_y+2, Game.bar_width, 'HP', pc.hp, pc.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
 
             # Enemy
             con.draw_str(Game.en_hud_x, Game.en_hud_y, enemy.name)
-            render_bar(con, Game.en_hud_x, Game.en_hud_y+2, Game.bar_width, 'HP', enemy.fighter.hp, enemy.fighter.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
-            render_bar(con, Game.en_hud_x, Game.en_hud_y+3, Game.bar_width, 'SP', enemy.fighter.sp, enemy.fighter.max_sp, colors.get('blue'), colors.get('dark_blue'), colors.get('white'))
+            render_bar(con, Game.en_hud_x, Game.en_hud_y+2, Game.bar_width, 'HP', enemy.hp, enemy.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
 
             # Log
             y = 15
@@ -102,7 +100,7 @@ def main():
             x = Game.pc_hud_x
             y = Game.pc_hud_y+5
             n = 1
-            for skill in pc.fighter.skills:
+            for skill in pc.skills:
                 con.draw_str(x, y, "["+str(n)+"]")
                 render_bar(con, x+4, y, 20, skill.name, skill.timeout, skill.max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
                 y += 1
@@ -112,11 +110,26 @@ def main():
             x = Game.en_hud_x
             y = Game.en_hud_y+5
             n = 1
-            for skill in enemy.fighter.skills:
+            for skill in enemy.skills:
                 con.draw_str(x, y, "["+str(n)+"]")
                 render_bar(con, x+4, y, 20, skill.name, skill.timeout, skill.max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
                 y += 1
                 n += 1
+
+            # Buffs
+            # Player
+            x = 35
+            y = 5
+            for buff in pc.buffs:
+                con.draw_str(x, y, buff.icon, fg=colors.get('green'))
+                y+=1
+
+            # Enemy
+            x = 65
+            y = 5
+            for buff in enemy.buffs:
+                con.draw_str(x, y, buff.icon, fg=colors.get('green'))
+                y+=1
 
             # Battlers
             # Player
@@ -143,11 +156,11 @@ def main():
 
             con.draw_str(1, 6, 'Skills')
             y = 8
-            for skill in pc.fighter.skills:
+            for skill in pc.skills:
                 con.draw_str(1, y, ' -'+ skill.name)
                 y += 1
 
-            con.draw_str(20, 6, 'Souls:')
+            con.draw_str(20, 6, 'Points:')
             con.draw_str(28, 6, str(pc.soulstack))
 
             con.draw_str(2, Game.screen_height-1, '[Z] Next')
@@ -176,27 +189,39 @@ def main():
             results = []
             if combat_locked:
                 # Player
-                for skill in pc.fighter.skills:
+                for skill in pc.skills:
                     if skill.timeout < skill.max_timeout:
                         skill.timeout += 1
+
+                for buff in pc.buffs:
+                    if buff.timeout > 0:
+                        buff.timeout -= 1
+                    else:
+                        del pc.buffs[pc.buffs.index(buff)]
 
                 if user_input:
                     if user_input.keychar == '1' or user_input.keychar == '2' or user_input.keychar == '3' or user_input.keychar == '4':
-                        n = int(user_input.keychar)-1
-                        if pc.fighter.skills[n].timeout == pc.fighter.skills[n].max_timeout:
-                            results = pc.fighter.attack(enemy, pc.fighter.skills[n])
+                        skill = pc.skills[int(user_input.keychar)-1]
+                        if skill.timeout == skill.max_timeout:
+                            results = skill.attack(pc, enemy)
 
                 # Enemy
-                for skill in enemy.fighter.skills:
+                for skill in enemy.skills:
                     if skill.timeout < skill.max_timeout:
                         skill.timeout += 1
+
+                for buff in enemy.buffs:
+                    if buff.timeout > 0:
+                        buff.timeout -= 1
+                    else:
+                        del enemy.buffs[enemy.buffs.index(buff)]
 
                 if mact_counter < 50:
                     mact_counter += 1
                 else:
-                    skill = random.choice(enemy.fighter.skills)
+                    skill = random.choice(enemy.skills)
                     if skill.timeout >= skill.max_timeout:
-                        results = enemy.fighter.attack(pc, skill)
+                        results = skill.attack(enemy, pc)
                     mact_counter = 0
 
                 for result in results:
@@ -212,7 +237,7 @@ def main():
 
             if not combat_locked:
                 if user_input and user_input.keychar == 'z':
-                    for skill in pc.fighter.skills:
+                    for skill in pc.skills:
                         skill.timeout = skill.max_timeout
                     message_log.messages = []
                     gamestate = State.UPGD_PHASE

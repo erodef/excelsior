@@ -1,15 +1,24 @@
+import random
 from abc import ABC, abstractmethod
 from logbox import Message
 
+class Buff:
+    def __init__(self, name, stat, amount, timeout):
+        self.name = name
+        self.stat = stat
+        self.amount = amount
+        self.timeout = timeout
+
+        self.icon = self.name[:1]
 
 class BaseSkill(ABC):
     """
     Abstract class for skills.
     """
-    def __init__(self, name, dmg, to_hit, cost, timeout, message):
+    def __init__(self, name, dmg, to_hit, timeout, message):
         self.name = name
+        self.desc = ''
         self.dmg = dmg
-        self.cost = cost
         self.timeout = timeout
         self.max_timeout = self.timeout
         self.to_hit = to_hit
@@ -19,20 +28,55 @@ class BaseSkill(ABC):
     def attack(self, user, target):
         pass
 
+class formula():
+    def __init__(self):
+        pass
+
 class SkillStdA(BaseSkill):
-    def __init__(self, name, dmg, to_hit, cost, timeout, message):
-        super().__init__(name, dmg, to_hit, cost, timeout, message)
+    """
+    Class for standard attack skills. No special effects, just direct damage dealing.
+    """
+    def __init__(self, name, dmg, to_hit, timeout, message):
+        super().__init__(name, dmg, to_hit, timeout, message)
 
     def attack(self, user, target):
-        pass
+        result = []
+        damage = max(0, self.dmg + int(user.atk*0.5) * int(user.spd * 0.3) - target.df + random.randint(-5,+5))
+
+        for buff in target.buffs:
+            if buff.stat == 'guard':
+                damage = 0
+
+        kwargs = { 'actor': user.name.capitalize(), 'target': target.name, 'amount': str(damage) }
+        if damage > 0:
+            result.append({
+                'message': Message(self.message.format(**kwargs))
+                })
+
+            result.extend(target.take_hit(damage))
+        else:
+            result.append({'message': Message('{0} tries to attack {1} but the damage is mitigated'.format(user.name.capitalize(), target.name))})
+
+        self.timeout = 0
+        return result
+
+class SkillScndA(BaseSkill):
+    """
+    Class for secondary attack skills. Special effects and actions.
+    """
+    pass
 
 class SkillGd(BaseSkill):
-    def __init__(self, name, dmg, to_hit, cost, timeout, message):
-        super().__init__(name, dmg, to_hit, cost, timeout, message)
+    """
+    Class for guard type abillities.
+    """
+    def __init__(self, name, dmg, to_hit, timeout, message):
+        super().__init__(name, dmg, to_hit, timeout, message)
 
     def attack(self, user, target):
-        pass
+        result = []
+        result.append({'message': Message('{0} prepares to parry!'.format(user.name.capitalize()))})
+        user.buffs.append(Buff('Parry','guard',0 ,5))
 
-skillpunch = SkillStdA('Punch', dmg=10, to_hit=70, cost=0, timeout=100, message='{actor} punches {target} dealing {amount} damage!')
-
-skillguard = SkillGd('Parry', dmg=0, to_hit=100, timeout=50, cost=1, message='{actor} prepares to parry!')
+        self.timeout = 0
+        return result
