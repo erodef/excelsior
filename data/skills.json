@@ -35,5 +35,33 @@
         "message" : "{actor} prepares to parry!"
       }
     ]
+  },{
+    "name" : "Punch II",
+    "timeout" : 100,
+    "desc" : "A BETTER normal punch.",
+    "req" : "Punch",
+    "actions" : [
+      {
+        "type" : "direct_damage",
+        "dmg" : 15,
+        "message" : "{actor} strikes {target} dealing {amount} damage!"
+      }
+    ]
+  },{
+    "name" : "Double Punch",
+    "timeout" : 150,
+    "desc" : "A double punch combo.",
+    "req" : "Punch",
+    "actions" : [
+      {
+        "type" : "direct_damage",
+        "dmg" : 7,
+        "message" : "{actor} punches {target} dealing {amount} damage!"
+      },{
+        "type" : "direct_damage",
+        "dmg" : 11,
+        "message" : "and then again for {amount} damage!"
+      }
+    ]
   }
 ]

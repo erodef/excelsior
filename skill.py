@@ -60,7 +60,7 @@ class direct_damage(Action):
 
             results.extend(target.take_hit(damage))
         else:
-            results.append({'message': Message('{0} tries to attack {1} but the damage is mitigated'.format(user.name.capitalize(), target.name))})
+            results.append({'message': Message('{actor} tries to attack {target} but the damage is nullified!'.format(**kwargs))})
 
         return results
 
@@ -73,7 +73,7 @@ class guard(Action):
         results = []
 
         user.buffs.append(Buff('Parry','guard',0 ,self.duration))
-
-        results.append({'message': Message('{0} prepares to parry!'.format(user.name.capitalize()))})
+        kwargs = { 'actor': user.name.capitalize(), 'target': target.name }
+        results.append({'message': Message(self.message.format(**kwargs))})
 
         return results
