@@ -21,6 +21,7 @@ class Buff:
 class Skill:
     def __init__(self, name, timeout, desc, req, actions):
         self.name = name
+        self.t_name = ''
         self.timeout = timeout
         self.max_timeout = self.timeout
         self.desc = desc

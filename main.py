@@ -1,15 +1,14 @@
 # coding=utf-8
 """
-    TODO: Skill upgrade system
     TODO: Proper monster attacks and AI
-    TODO: Introduction
-    TODO: Ending
+    TODO: Battle animations (hit numbers, hit marks, warnings etc)
 
+    TODO: -EXTRA- Ending
     TODO: -EXTRA- Choices during dungeon movement
     TODO: -EXTRA- More monsters, skills
     TODO: -EXTRA- Combos
     TODO: -EXTRA- Music and sfx
-    TODO: -EXTRA- Battle animations (hit numbers, hit marks, warnings etc)
+
 
     TODO: -VERY_EXTRA- Text animations
 """
@@ -32,9 +31,7 @@ from colors import getColors
 def main():
 
     Game = Engine()
-    colors = getColors()
-
-    combat_locked = False
+    colors = Game.colors
     mact_counter = 0
 
     # TDL init
@@ -68,142 +65,36 @@ def main():
 
         # Drawing on screen in menu
         if gamestate == State.MENU:
-            con.draw_str(int(Game.screen_width/2), int(Game.screen_height/2)-5, "Excelsior")
-
-            con.draw_str(int(Game.screen_width/2)-2, int(Game.screen_height/2)+5, '[ ] Start')
-            con.draw_str(int(Game.screen_width/2)-1, int(Game.screen_height/2)+5, '1', fg=colors.get('green'))
-
-            con.draw_str(int(Game.screen_width/2)-2, int(Game.screen_height/2)+6, '[   ] Quit')
-            con.draw_str(int(Game.screen_width/2)-1, int(Game.screen_height/2)+6, 'ESC', fg=colors.get('green'))
+            draw_menu(con, Game)
 
         # Drawing on screen in room
         if gamestate == State.ROOM_PHASE:
-            con.draw_str(2, 2, Game.current_level.name)
-            con.draw_str(3, 4, Game.current_level.desc)
-
-            if Game.current_level.entity:
-                con.draw_str(3, 8, "In this room, there is a")
-                con.draw_str(28, 8, Game.current_level.entity.name, colors.get('red'))
-
-            # Bottom Panel
-            con.draw_str(Game.screen_width-20, Game.screen_height-1, '[ ] Fight')
-            con.draw_str(Game.screen_width-19, Game.screen_height-1, 'Z', fg=colors.get('green'))
+            draw_room(con, Game)
 
         # Drawing on screen during battle
         if gamestate == State.BATTLE_PHASE:
-            con.clear()
-            con.draw_str(2, 2, Game.current_level.name)
-
-            enemy = Game.current_level.entity
-
-            # HUDs
-            # Player
-            con.draw_str(Game.pc_hud_x, Game.pc_hud_y, pc.name)
-            render_bar(con, Game.pc_hud_x, Game.pc_hud_y+2, Game.bar_width, 'HP', pc.hp, pc.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
-
-            # Enemy
-            con.draw_str(Game.en_hud_x, Game.en_hud_y, enemy.name)
-            render_bar(con, Game.en_hud_x, Game.en_hud_y+2, Game.bar_width, 'HP', enemy.hp, enemy.max_hp, colors.get('light_red'), colors.get('darker_red'), colors.get('white'))
-
-            # Log
-            y = 15
-            for message in message_log.messages:
-                con.draw_str(message_log.x, y, message.text, fg=message.color)
-                y += 1
-
-            # Skills
-            # Player
-            x = Game.pc_hud_x
-            y = Game.pc_hud_y+5
-            n = 1
-            for skill in pc.skills:
-                con.draw_str(x, y, "["+str(n)+"]")
-                render_bar(con, x+4, y, 20, skill.name, skill.timeout, skill.max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
-                y += 1
-                n += 1
-
-            # Enemy
-            x = Game.en_hud_x
-            y = Game.en_hud_y+5
-            n = 1
-            for skill in enemy.skills:
-                con.draw_str(x, y, "["+str(n)+"]")
-                render_bar(con, x+4, y, 20, skill.name, skill.timeout, skill.max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
-                y += 1
-                n += 1
-
-            # Buffs
-            # Player
-            x = 35
-            y = 5
-            for buff in pc.buffs:
-                con.draw_str(x, y, buff.icon, fg=colors.get('green'))
-                y+=1
-
-            # Enemy
-            x = 65
-            y = 5
-            for buff in enemy.buffs:
-                con.draw_str(x, y, buff.icon, fg=colors.get('green'))
-                y+=1
-
-            # Battlers
-            # Player
-            lx = 12
-            ly = 25
-            for bx in range(10):
-                for by in range(10):
-                    con.draw_char(bx+lx, by+ly, '@')
-
-            # Enemy
-            lx = 56
-            ly = 25
-            for bx in range(10):
-                for by in range(10):
-                    con.draw_char(bx+lx, by+ly, enemy.battler)
+            draw_battle(con, Game, pc)
 
             root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
 
         # Drawing on screen after battle
         if gamestate == State.UPGD_PHASE:
-            con.clear()
-
-            con.draw_str(int(Game.screen_width/2), 1, 'Enhancement')
-            con.draw_str(3, 3, 'Upgrade your skills or acquire new ones.')
-            con.draw_str(3, 4, 'Most skills will stay hidden until you unlock them through other ones.')
-
-            con.draw_str(3, 5, 'Mouse over the skill name for details.')
-
-            x = 2
-            y = 15
-            con.draw_str(x, y, 'Known skills:')
-            y += 1
-            for skill in pc.skills:
-                con.draw_str(x, y, ' -'+ skill.name)
-                y += 1
-
-            x = int(Game.screen_width/2)
-            y = 15
-            con.draw_str(x, y, 'Available skills:')
-            y += 1
-            for skill in Game.skill_database:
-                # If pc has req:
-                con.draw_str(x, y, ' -'+ skill.name)
-                y += 1
-
-            con.draw_str(Game.screen_width-20, Game.screen_height-1, '[Z] Next')
+            draw_upgd(con, Game, pc)
 
         root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
-
         tdl.flush()
 
+        Game.mousedown = False
         # Handle events
         for event in tdl.event.get():
             if event.type == 'KEYDOWN':
                 user_input = event
                 break
             elif event.type == 'MOUSEMOTION':
-                Game.mouse_coordinates = event.cell
+                Game.mouse = event.cell
+                Game.mouse_x, Game.mouse_y = Game.mouse
+            if event.type == 'MOUSEDOWN':
+                Game.mousedown = True
 
         # If no input matches KEYDOWN, set user_input to None
         else:
@@ -215,7 +106,7 @@ def main():
         if gamestate == State.BATTLE_PHASE:
             enemy = Game.current_level.entity
             results = []
-            if combat_locked:
+            if Game.combat_locked:
                 # Player
                 for skill in pc.skills:
                     if skill.timeout < skill.max_timeout:
@@ -264,13 +155,14 @@ def main():
 
                     if dead_entity and dead_entity != pc:
                         pc.absorb(1)
-                        message_log.add_message(Message(dead_entity.name+ " has died!", colors.get("orange")))
-                        message_log.add_message(Message(pc.name+ " got 1 upgrade point!", colors.get("light_cyan")))
-                        message_log.add_message(Message("Press 'Z' to continue...", colors.get("green")))
-                        combat_locked = False
+                        Game.endtext = Message("Victory!", colors.get('green'))
+                        Game.combat_locked = False
 
-            if not combat_locked:
-                if user_input and user_input.keychar == 'z':
+                    elif dead_entity and dead_entity == pc:
+                        pass
+
+            if not Game.combat_locked:
+                if user_input and user_input.key == 'ENTER':
                     for skill in pc.skills:
                         skill.timeout = skill.max_timeout
                     message_log.messages = []
@@ -278,20 +170,23 @@ def main():
 
         # Controls
         elif gamestate == State.ROOM_PHASE:
-            if user_input and user_input.keychar == 'z':
+            if user_input and user_input.key == 'ENTER':
                 if Game.current_level.entity:
                     gamestate = State.BATTLE_PHASE
-                    combat_locked = True
+                    Game.combat_locked = True
                 else:
                     Game.next_level()
 
         elif gamestate == State.UPGD_PHASE:
-            if user_input and user_input.keychar == 'z':
-                Game.next_level()
-                gamestate = State.ROOM_PHASE
+            if user_input and user_input.key == 'ENTER':
+                if Game.upgd_selec:
+                    pc.upgd_skill(Game.upgd_selec)
+                    Game.upgd_selec = ''
+                    Game.next_level()
+                    gamestate = State.ROOM_PHASE
 
         elif gamestate == State.MENU:
-            if user_input and user_input.keychar == '1':
+            if user_input and user_input.key == 'ENTER':
                 gamestate = State.ROOM_PHASE
 
         if user_input and user_input.key == 'ESCAPE' :

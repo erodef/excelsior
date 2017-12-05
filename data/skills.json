@@ -1,5 +1,6 @@
 [
   {
+    "t_name": "p00",
     "name" : "Punch",
     "timeout" : 100,
     "desc" : "A normal punch.",
@@ -12,6 +13,7 @@
       }
     ]
   },{
+    "t_name": "k00",
     "name" : "Kick",
     "timeout" : 180,
     "desc" : "A normal kick.",
@@ -24,6 +26,7 @@
       }
     ]
   },{
+    "t_name": "g00",
     "name" : "Parry",
     "timeout" : 50,
     "desc" : "Attempt to parry the opponent's strike.",
@@ -36,10 +39,11 @@
       }
     ]
   },{
+    "t_name": "p01",
     "name" : "Punch II",
     "timeout" : 100,
     "desc" : "A BETTER normal punch.",
-    "req" : "Punch",
+    "req" : "p00",
     "actions" : [
       {
         "type" : "direct_damage",
@@ -48,10 +52,11 @@
       }
     ]
   },{
+    "t_name": "p10",
     "name" : "Double Punch",
     "timeout" : 150,
     "desc" : "A double punch combo.",
-    "req" : "Punch",
+    "req" : "p00",
     "actions" : [
       {
         "type" : "direct_damage",

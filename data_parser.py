@@ -25,7 +25,7 @@ def get_skill_data(path):
         data = json.load(json_data)
         results = []
         for skill in data:
-            name, timeout, desc, rec, actions = skill["name"], skill["timeout"], skill["desc"], skill["req"], skill["actions"]
+            name, t_name, timeout, desc, rec, actions = skill["name"], skill["t_name"], skill["timeout"], skill["desc"], skill["req"], skill["actions"]
             final_actions = []
             for action in actions:
                 new_action = ''
@@ -37,5 +37,6 @@ def get_skill_data(path):
 
                 final_actions.append(new_action)
             entry = Skill(name, timeout, desc, rec, final_actions)
+            entry.t_name = t_name
             results.append(entry)
         return results

@@ -1,4 +1,5 @@
 import math
+from copy import deepcopy
 
 
 class Entity:
@@ -23,6 +24,22 @@ class Entity:
 
         if self.ai:
             self.ai.owner = self
+
+    def add_skill(self, skill):
+        self.skills.append(deepcopy(skill))
+
+    def upgd_skill(self, skill):
+        nump = skill.t_name[:1]
+        if nump == 'p':
+            num = 0
+        if nump == 'k':
+            num = 1
+        if nump == 'g':
+            num = 2
+        self.skills[num] = deepcopy(skill)
+
+    def change_skill(self, num, skill):
+        self.skills[num-1] = deepcopy(skill)
 
     def take_hit(self, value):
         result = []

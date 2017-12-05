@@ -16,7 +16,7 @@
         "spd": 8,
         "desc": "Small green demon.",
         "weight": 1,
-        "battler": "rat.txt"
+        "battler": "gob.txt"
     },{
         "name": "Imp",
         "hp": 100,
@@ -25,7 +25,7 @@
         "spd": 15,
         "desc": "Small red demon.",
         "weight": 2,
-        "battler": "rat.txt"
+        "battler": "imp.txt"
     },{
         "name": "Skeleton",
         "hp": 110,
@@ -34,7 +34,7 @@
         "spd": 10,
         "desc": "Walking Bones. Hyuk hyuk.",
         "weight": 3,
-        "battler": "rat.txt"
+        "battler": "skel.txt"
     },{
         "name": "Golem",
         "hp": 200,
@@ -43,7 +43,7 @@
         "spd": 8,
         "desc": "Stone construct.",
         "weight": 4,
-        "battler": "rat.txt"
+        "battler": "gol.txt"
     },{
         "name": "Lesser Demon",
         "hp": 170,
@@ -52,6 +52,6 @@
         "spd": 20,
         "desc": "True demon. Violent and powerful.",
         "weight": 5,
-        "battler": "rat.txt"
+        "battler": "ldm.txt"
     }
 ]
