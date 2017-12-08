@@ -8,8 +8,7 @@
     "actions" : [
       {
         "type" : "direct_damage",
-        "dmg" : 10,
-        "message" : "{actor} punches {target} dealing {amount} damage!"
+        "dmg" : 10
       }
     ]
   },{
@@ -21,8 +20,7 @@
     "actions" : [
       {
         "type" : "direct_damage",
-        "dmg" : 20,
-        "message" : "{actor} kicks {target} dealing {amount} damage!"
+        "dmg" : 20
       }
     ]
   },{
@@ -34,38 +32,22 @@
     "actions" : [
       {
         "type" : "guard",
-        "duration" : 5,
-        "message" : "{actor} prepares to parry!"
+        "duration" : 5
       }
     ]
   },{
-    "t_name": "p01",
-    "name" : "Punch II",
-    "timeout" : 100,
-    "desc" : "A BETTER normal punch.",
-    "req" : "p00",
-    "actions" : [
-      {
-        "type" : "direct_damage",
-        "dmg" : 15,
-        "message" : "{actor} strikes {target} dealing {amount} damage!"
-      }
-    ]
-  },{
-    "t_name": "p10",
+    "t_name": "s00",
     "name" : "Double Punch",
     "timeout" : 150,
     "desc" : "A double punch combo.",
-    "req" : "p00",
+    "req" : "",
     "actions" : [
       {
         "type" : "direct_damage",
-        "dmg" : 7,
-        "message" : "{actor} punches {target} dealing {amount} damage!"
+        "dmg" : 7
       },{
         "type" : "direct_damage",
-        "dmg" : 11,
-        "message" : "and then again for {amount} damage!"
+        "dmg" : 11
       }
     ]
   }

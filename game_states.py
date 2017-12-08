@@ -10,3 +10,4 @@ class State(Enum):
     BATTLE_PHASE = auto()
     UPGD_PHASE = auto()
     ENDING = auto()
+    GAMEOVER = auto()

@@ -1,16 +1,13 @@
 # coding=utf-8
 """
-    TODO: Proper monster attacks and AI
-    TODO: Battle animations (hit numbers, hit marks, warnings etc)
+    TODO: More monsters, skills
+    TODO: 1 more design pattern(decorators?)
 
-    TODO: -EXTRA- Ending
+    TODO: -EXTRA- Battle visuals (hit numbers, hit marks, warnings, different monster sprites etc)
+    TODO: -EXTRA- Proper monster attacks and AI
     TODO: -EXTRA- Choices during dungeon movement
-    TODO: -EXTRA- More monsters, skills
     TODO: -EXTRA- Combos
     TODO: -EXTRA- Music and sfx
-
-
-    TODO: -VERY_EXTRA- Text animations
 """
 import json
 import random
@@ -33,30 +30,29 @@ def main():
     Game = Engine()
     colors = Game.colors
     mact_counter = 0
+    menu_cursor = 0
 
     # TDL init
     tdl.set_font(Game.font, greyscale=Game.greyscale, altLayout=Game.altLayout)
     root_console = tdl.init(Game.screen_width, Game.screen_height, title=Game.title)
     tdl.set_fps(30)
 
-    # Gameplay screen
+    # Console
     con = tdl.Console(Game.screen_width, Game.screen_height)
 
     # UI Panel
     hud = tdl.Console(Game.screen_width, Game.screen_height)
 
-    Game.gen_dungeon(5)
-
-    # Player init
-    pskills = [copy.deepcopy(Game.skill_database[0]), copy.deepcopy(Game.skill_database[1]), copy.deepcopy(Game.skill_database[2])]
-    pc_fighter = {'hp':50, 'atk':15, 'df':10, 'spd':15, 'skills':pskills}
-    pc = PC('Player', fighter=pc_fighter)
-
-    gamestate = State.MENU
-
+    # Message Log
     message_log = MessageLog(Game.message_x, Game.message_width, Game.message_height)
 
+
+    # Player init
+    pc = Game.return_player()
+
     if Game.starting:
+        gamestate = State.MENU
+        Game.gen_dungeon(Game.dungeon_levels)
         Game.starting = False
 
     # Draw
@@ -100,9 +96,7 @@ def main():
         else:
             user_input = None
 
-        # Input actions
-
-        # Combat
+        # Handling events in diferent gamestates
         if gamestate == State.BATTLE_PHASE:
             enemy = Game.current_level.entity
             results = []
@@ -130,7 +124,6 @@ def main():
                     if skill.timeout < skill.max_timeout:
                         skill.timeout += 1
 
-
                 for buff in enemy.buffs:
                     if buff.timeout > 0:
                         buff.timeout -= 1
@@ -153,22 +146,29 @@ def main():
                     if message:
                         message_log.add_message(message)
 
-                    if dead_entity and dead_entity != pc:
-                        pc.absorb(1)
-                        Game.endtext = Message("Victory!", colors.get('green'))
+                    if dead_entity:
                         Game.combat_locked = False
+                        if dead_entity != pc:
+                            pc.absorb(1)
+                            Game.endtext = Message("Victory!", colors.get('green'))
 
-                    elif dead_entity and dead_entity == pc:
-                        pass
+                        elif dead_entity == pc:
+                            Game.endtext = Message("DEAD!", colors.get('red'))
+                            Game.gameover = True
 
             if not Game.combat_locked:
                 if user_input and user_input.key == 'ENTER':
-                    for skill in pc.skills:
-                        skill.timeout = skill.max_timeout
-                    message_log.messages = []
-                    gamestate = State.UPGD_PHASE
+                    if Game.gameover == False:
+                        for skill in pc.skills:
+                            skill.timeout = skill.max_timeout
+                        message_log.messages = []
+                        gamestate = State.UPGD_PHASE
+                    else:
+                        Game.gameover = False
+                        Game.reset()
+                        pc = Game.return_player()
+                        gamestate = State.MENU
 
-        # Controls
         elif gamestate == State.ROOM_PHASE:
             if user_input and user_input.key == 'ENTER':
                 if Game.current_level.entity:
@@ -180,15 +180,30 @@ def main():
         elif gamestate == State.UPGD_PHASE:
             if user_input and user_input.key == 'ENTER':
                 if Game.upgd_selec:
-                    pc.upgd_skill(Game.upgd_selec)
+                    pc.upgd_skillset(Game.upgd_selec)
                     Game.upgd_selec = ''
-                    Game.next_level()
-                    gamestate = State.ROOM_PHASE
+                    end = Game.next_level()
+                    if not end == 1:
+                        gamestate = State.ROOM_PHASE
+                    else:
+                        gamestate = State.ENDING
 
         elif gamestate == State.MENU:
             if user_input and user_input.key == 'ENTER':
                 gamestate = State.ROOM_PHASE
 
+        elif gamestate == State.ENDING:
+            tmd = "You WIN!"
+            con.draw_str(int(Game.screen_width/2)-int(len(tmd)/2),int(Game.screen_height/2)-5, tmd)
+            kms = "Press Enter to continue..."
+            con.draw_str(int(Game.screen_width/2)-int(len(kms)/2),int(Game.screen_height/2)-4, kms)
+            if user_input and user_input.key == 'ENTER':
+                Game.gameover = False
+                Game.reset()
+                pc = Game.return_player()
+                gamestate = State.MENU
+
+        # Controls
         if user_input and user_input.key == 'ESCAPE' :
             return True
 

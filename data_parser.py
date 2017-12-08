@@ -30,10 +30,10 @@ def get_skill_data(path):
             for action in actions:
                 new_action = ''
                 if action["type"] == "direct_damage":
-                    new_action = direct_damage(action["message"], action["dmg"])
+                    new_action = direct_damage(action["dmg"])
 
                 if action["type"] == "guard":
-                    new_action = guard(action["message"], action["duration"])
+                    new_action = guard(action["duration"])
 
                 final_actions.append(new_action)
             entry = Skill(name, timeout, desc, rec, final_actions)

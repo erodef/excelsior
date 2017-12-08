@@ -28,7 +28,7 @@ class Entity:
     def add_skill(self, skill):
         self.skills.append(deepcopy(skill))
 
-    def upgd_skill(self, skill):
+    def upgd_skillset(self, skill):
         nump = skill.t_name[:1]
         if nump == 'p':
             num = 0
@@ -36,10 +36,15 @@ class Entity:
             num = 1
         if nump == 'g':
             num = 2
-        self.skills[num] = deepcopy(skill)
+        if nump == 's':
+            num = 3
+        if skill in self.skills:
+            self.skills[num].upgrade()
+        else:
+            self.change_skill(num, skill)
 
     def change_skill(self, num, skill):
-        self.skills[num-1] = deepcopy(skill)
+        self.skills[num] = deepcopy(skill)
 
     def take_hit(self, value):
         result = []
@@ -47,3 +52,6 @@ class Entity:
         if self.hp <= 0:
             result.append({'dead': self})
         return result
+
+    def dead(self):
+        pass

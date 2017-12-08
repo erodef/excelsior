@@ -29,25 +29,19 @@ def draw_upgd(con, Game, pc):
 
     con.draw_str(int(Game.screen_width/2), 1, 'Enhancement')
     con.draw_str(3, 3, 'Upgrade your skills or acquire new ones.')
-    con.draw_str(3, 4, 'Most skills will stay hidden until you unlock them through other ones.')
-
-    con.draw_str(3, 5, 'Mouse over the skill name for details.')
 
     mouse_x, mouse_y = Game.mouse
     alist = []
     plist = []
     x = 2
     y = 15
-    con.draw_str(x, y, 'Known skills:')
-    y += 1
-    for skill in pc.skills:
-        con.draw_str(x, y, ' -'+ skill.name)
-        y += 1
-
-    x = int(Game.screen_width/2)
-    y = 15
     con.draw_str(x, y, 'Available skills:')
     y += 1
+    for skill in pc.skills:
+        plist.append((x,y))
+        alist.append(skill)
+        con.draw_str(x, y, ' -'+ skill.name)
+        y += 1
     for skill in Game.skill_database:
         for pskill in pc.skills:
             if pskill.t_name == skill.req:
@@ -62,13 +56,15 @@ def draw_upgd(con, Game, pc):
         ui_skill = alist[plist.index(pos)]
         pos_x, pos_y = pos
         if mouse_y == pos_y and mouse_x >= pos_x and mouse_x <= pos_x + len(ui_skill.name)+2:
-            con.draw_str(x, y, ui_skill.name)
-            con.draw_str(x, y+2, ui_skill.desc)
-            if Game.mousedown:
-                Game.upgd_selec = ui_skill
+            Game.upgd_selec = ui_skill
 
     if Game.upgd_selec:
-        con.draw_str(15, 29, "You selected "+Game.upgd_selec.name)
+        con.draw_str(x, y, Game.upgd_selec.name +" LVL."+ str(Game.upgd_selec.level))
+        con.draw_str(x, y+2, Game.upgd_selec.desc)
+        y += 4
+        for effect in Game.upgd_selec.effects():
+            con.draw_str(x, y, effect)
+            y +=1
 
     con.draw_str(Game.screen_width-20, Game.screen_height-1, '[ENTER] Next')
     con.draw_str(Game.screen_width-19, Game.screen_height-1, 'ENTER', colors.get('green'))
@@ -99,6 +95,9 @@ def draw_battle(con, Game, pc):
     y = Game.pc_hud_y+8
     n = 1
     for skill in pc.skills:
+        if pc.skills.index(skill) == 2:
+            y -= 6
+            x += 15
         con.draw_str(x, y, skill.name)
         con.draw_str(x, y+1, "[?]")
         con.draw_str(x+1, y+1, str(n), fg= colors.get('green'))
@@ -113,14 +112,20 @@ def draw_battle(con, Game, pc):
         x+=1
 
     # Enemy
+    """
     x = Game.en_hud_x
     y = Game.en_hud_y+5
-    n = 1
     for skill in enemy.skills:
         con.draw_str(x, y, skill.name)
         render_bar(con, x, y+1, skill_bar_width, 1, skill.timeout, skill.max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
         y += 2
         n += 1
+    """
+    skill_bar_width = 30
+    x = int(Game.screen_width/2) - int(skill_bar_width/2)
+    y = Game.en_hud_y+5
+    for skill in enemy.skills:
+        render_bar(con, x, y+1, skill_bar_width, 1, skill.timeout, skill.max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
 
     x = Game.en_hud_x-1
     y = Game.en_hud_y

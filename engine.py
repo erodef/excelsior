@@ -4,7 +4,9 @@ import json
 import copy
 from enum import Enum, auto
 from creature import Creature
+from pc import PC
 from colors import getColors
+from game_states import *
 from components.enemy_ai import *
 from skill import *
 from data_parser import get_monster_data, get_skill_data
@@ -38,11 +40,12 @@ class Engine:
         en_hud_x = int(screen_width/2)-20
         en_hud_y = 5
 
-        max_rooms = 30
         combat_locked = False
+        gameover = False
         first_time = False
         endtext = ''
         upgd_selec =''
+        dungeon_levels = 5
         dungeon = []
         current_level = Room()
 
@@ -51,33 +54,41 @@ class Engine:
         colors = getColors()
 
         def __init__(self):
-            pass
+            pskills = [copy.deepcopy(self.skill_database[0]), copy.deepcopy(self.skill_database[1]), copy.deepcopy(self.skill_database[2]), copy.deepcopy(self.skill_database[3])]
+            pc_fighter = {'hp':50, 'atk':15, 'df':10, 'spd':15, 'skills':pskills}
+            self.__pc = PC('Player', fighter=pc_fighter)
 
         def gen_dungeon(self, levels):
+            self.dungeon = []
             for amount in range(levels):
                 level = Room(weight=amount)
                 candidates = []
                 for creature in self.creature_database:
                     creature.skills = [copy.deepcopy(self.skill_database[0])]
                     if creature.weight == level.weight:
-                        candidates.append(creature)
+                        candidates.append(copy.deepcopy(creature))
                 if candidates:
                     level.entity = random.choice(candidates)
                 self.dungeon.append(level)
                 if amount == 0:
                     self.current_level = self.dungeon[0]
 
-        def next_stage(self, gamestate):
-            if gamestate == State.ROOM_PHASE:
-                self.next_level()
-
         def next_level(self):
             c = 0
             for level in self.dungeon:
-                if self.current_level == level:
+                if self.current_level == len(self.dungeon)-1:
+                    return 1
+                elif self.current_level == level:
                     self.current_level = self.dungeon[c+1]
                     break
                 c += 1
+
+        def return_player(self):
+            return copy.deepcopy(self.__pc)
+
+        def reset(self):
+            self.gen_dungeon(self.dungeon_levels)
+
     instance = None
     def __init__(self):
         if not Engine.instance:
