@@ -77,6 +77,12 @@ def main():
         if gamestate == State.UPGD_PHASE:
             draw_upgd(con, Game, pc)
 
+        if gamestate == State.ENDING:
+            tmd = "You WIN!"
+            con.draw_str(int(Game.screen_width/2)-int(len(tmd)/2),int(Game.screen_height/2)-5, tmd)
+            kms = "Press Enter to continue..."
+            con.draw_str(int(Game.screen_width/2)-int(len(kms)/2),int(Game.screen_height/2)-4, kms)
+
         root_console.blit(con, 0, 0, Game.screen_width, Game.screen_height, 0, 0)
         tdl.flush()
 
@@ -149,10 +155,12 @@ def main():
                     if dead_entity:
                         Game.combat_locked = False
                         if dead_entity != pc:
+                            mact_counter = 0
                             pc.absorb(1)
                             Game.endtext = Message("Victory!", colors.get('green'))
 
                         elif dead_entity == pc:
+                            mact_counter = 0
                             Game.endtext = Message("DEAD!", colors.get('red'))
                             Game.gameover = True
 
@@ -162,7 +170,10 @@ def main():
                         for skill in pc.skills:
                             skill.timeout = skill.max_timeout
                         message_log.messages = []
-                        gamestate = State.UPGD_PHASE
+                        if Game.current_level == Game.dungeon[-1]:
+                            gamestate = State.ENDING
+                        else:
+                            gamestate = State.UPGD_PHASE
                     else:
                         Game.gameover = False
                         Game.reset()
@@ -174,29 +185,20 @@ def main():
                 if Game.current_level.entity:
                     gamestate = State.BATTLE_PHASE
                     Game.combat_locked = True
-                else:
-                    Game.next_level()
 
         elif gamestate == State.UPGD_PHASE:
             if user_input and user_input.key == 'ENTER':
                 if Game.upgd_selec:
                     pc.upgd_skillset(Game.upgd_selec)
                     Game.upgd_selec = ''
-                    end = Game.next_level()
-                    if not end == 1:
-                        gamestate = State.ROOM_PHASE
-                    else:
-                        gamestate = State.ENDING
+                    Game.next_level()
+                    gamestate = State.ROOM_PHASE
 
         elif gamestate == State.MENU:
             if user_input and user_input.key == 'ENTER':
                 gamestate = State.ROOM_PHASE
 
         elif gamestate == State.ENDING:
-            tmd = "You WIN!"
-            con.draw_str(int(Game.screen_width/2)-int(len(tmd)/2),int(Game.screen_height/2)-5, tmd)
-            kms = "Press Enter to continue..."
-            con.draw_str(int(Game.screen_width/2)-int(len(kms)/2),int(Game.screen_height/2)-4, kms)
             if user_input and user_input.key == 'ENTER':
                 Game.gameover = False
                 Game.reset()

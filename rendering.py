@@ -111,16 +111,6 @@ def draw_battle(con, Game, pc):
         con.draw_str(x, y, buff.icon, fg=colors.get('green'))
         x+=1
 
-    # Enemy
-    """
-    x = Game.en_hud_x
-    y = Game.en_hud_y+5
-    for skill in enemy.skills:
-        con.draw_str(x, y, skill.name)
-        render_bar(con, x, y+1, skill_bar_width, 1, skill.timeout, skill.max_timeout, colors.get('green'), colors.get('darker_green'), colors.get('black'))
-        y += 2
-        n += 1
-    """
     skill_bar_width = 30
     x = int(Game.screen_width/2) - int(skill_bar_width/2)
     y = Game.en_hud_y+5
@@ -134,7 +124,7 @@ def draw_battle(con, Game, pc):
         y+=1
 
     # Enemy Sprite
-    draw_enemy_battler(con, "skel.txt", int(Game.screen_width/2)-15, 12)
+    draw_enemy_battler(con, "data/sprites/"+enemy.battler+".txt", int(Game.screen_width/2)-15, 12)
 
     # End result
     if not Game.combat_locked:
@@ -167,10 +157,10 @@ def draw_enemy_battler(con, path, ix, iy):
         y = iy
         for line in data:
             for character in line:
-                if character == 'F':
-                    chara = 'F'
-                elif character == '.':
+                if character == '.':
                     chara = ' '
+                elif character == 'F':
+                    chara = 'F'
                 con.draw_char(x, y, chara)
                 x += 1
             x = ix

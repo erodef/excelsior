@@ -11,4 +11,6 @@ class PC(Entity):
         self.soulstack = 0
 
     def absorb(self, s):
+        self.max_hp += int(self.max_hp*0.2)
+        self.hp = self.max_hp
         self.soulstack += s

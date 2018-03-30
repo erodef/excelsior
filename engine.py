@@ -45,7 +45,7 @@ class Engine:
         first_time = False
         endtext = ''
         upgd_selec =''
-        dungeon_levels = 5
+        dungeon_levels = 6
         dungeon = []
         current_level = Room()
 
@@ -65,7 +65,7 @@ class Engine:
                 candidates = []
                 for creature in self.creature_database:
                     creature.skills = [copy.deepcopy(self.skill_database[0])]
-                    if creature.weight == level.weight:
+                    if creature.weight <= level.weight:
                         candidates.append(copy.deepcopy(creature))
                 if candidates:
                     level.entity = random.choice(candidates)
@@ -76,9 +76,7 @@ class Engine:
         def next_level(self):
             c = 0
             for level in self.dungeon:
-                if self.current_level == len(self.dungeon)-1:
-                    return 1
-                elif self.current_level == level:
+                if self.current_level == level:
                     self.current_level = self.dungeon[c+1]
                     break
                 c += 1

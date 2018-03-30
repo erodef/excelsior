@@ -14,7 +14,7 @@ def get_monster_data(path):
 
             entry = Creature(creature["name"], creature["weight"], fighter=fighter_c, ai=ai_c)
 
-            entry.battler = creature["battler"][:1]
+            entry.battler = creature["battler"]
             entry.desc = creature["desc"]
 
             results.append(entry)
