@@ -8,7 +8,7 @@ class Entity:
     """
     def __init__(self, name, fighter, ai=None):
         self.name = name
-        self.desc = 'Nothing is know about them.'
+        self.desc = 'Nothing is know about it.'
         self.battler = "?"
 
         self.max_hp = fighter.get('hp')
