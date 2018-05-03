@@ -205,17 +205,27 @@ def draw_colored_line(con, x, y, text, fg=None, bg=None):
     con = tdl.Console(2, 2)
     colored_words = []
     colors = []
+    text_blocks = []
     
     n = 0
     for chara in text:
         if chara is "[":
             word = ""
             for charac in text[n+1:]:
-                if charac is not "]":
-                    word += charac
-                else:
+                if charac is "]":
                     colored_words.append(word)
                     break
+                else:
+                    word += charac
+            for charac in text[]
+        elif chara is "{":
+            word = ""
+            for charac in text[n+1:]:
+                if charac is "}":
+                    colors.append(word)
+                    break
+                else:
+                    word += charac
         n += 1
     # con.draw_str(x, y, text, fg, bg)
     return colored_words, colors

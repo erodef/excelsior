@@ -48,7 +48,7 @@ def main():
         # Drawing on screen in menu
         if G.state == State.MENU:
             draw_menu(con, G)
-            text = "teste teste [1, 2, 3]{} mais uma [véz]."
+            text = "teste teste [1, 2, 3]{Color.Red} mais uma [véz]{Color.Green}."
             print(draw_colored_line(con, 2, 3, text))
 
         # Drawing on screen in room
