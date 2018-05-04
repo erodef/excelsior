@@ -201,10 +201,21 @@ def clear_screen(con, screen_width, screen_height):
             con.draw_char(x, y, ' ', bg=None)
 
 
-def drawColoredText(con, x, y, text, fg, bg):
-    """
-    Syntax: "normal text, except [it's now red]{fg=Colors.red} and [this part got a blue backgorund]{bg=Colors.blue}"
-    """
-
+def draw_colored_line(con, x, y, text, fg=None, bg=None):
     con = tdl.Console(2, 2)
-    con.draw_str(x, y, text, fg, bg)
+    colored_words = []
+    colors = []
+    
+    n = 0
+    for chara in text:
+        if chara is "[":
+            word = ""
+            for charac in text[n+1:]:
+                if charac is not "]":
+                    word += charac
+                else:
+                    colored_words.append(word)
+                    break
+        n += 1
+    # con.draw_str(x, y, text, fg, bg)
+    return colored_words, colors

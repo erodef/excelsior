@@ -48,6 +48,8 @@ def main():
         # Drawing on screen in menu
         if G.state == State.MENU:
             draw_menu(con, G)
+            text = "teste teste [1, 2, 3]{} mais uma [véz]."
+            print(draw_colored_line(con, 2, 3, text))
 
         # Drawing on screen in room
         if G.state == State.ROOM_PHASE:
